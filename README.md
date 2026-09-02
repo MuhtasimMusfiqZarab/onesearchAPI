@@ -5,6 +5,7 @@ A GraphQL-powered backend service that aggregates and manages leads from multipl
 ## Overview
 
 OneSearchAPI is designed for lead generation and management, enabling users to:
+
 - Search and filter YouTube channels by location, subscriber count, and category
 - Discover LinkedIn profiles by company, job title, and location
 - Access Google Business listings by category and country
@@ -48,24 +49,29 @@ src/
 ## Key Modules
 
 ### Auth Module
+
 - Google OAuth 2.0 authentication
 - JWT token generation and validation
 - Passport strategies for authentication flow
 
 ### User Module
+
 - User registration and profile management
 - Multiple access roles: Admin, Pro, Demo, Provider
 - User reviews and ratings system
 - Credit balance tracking
 
 ### Data Source Modules (YouTube, Google, LinkedIn)
+
 Each module follows a consistent pattern:
+
 - **Entity:** Database schema with audit fields (createdAt, updatedAt, createdBy, updatedBy)
 - **Service:** Business logic for CRUD and search operations
 - **Resolver:** GraphQL query and mutation endpoints
 - **Repository:** TypeORM database access layer
 
 ### Payment & Subscriptions
+
 - Credit purchase system via Stripe
 - User credit deduction on lead unlock
 - Subscription tier-based access control
@@ -73,6 +79,7 @@ Each module follows a consistent pattern:
 ## Getting Started
 
 ### Prerequisites
+
 - Node.js 12+
 - MySQL 5.7+
 - npm or yarn
@@ -154,6 +161,24 @@ npm run test:e2e
 
 The GraphQL server runs at `http://localhost:5000/graphql` with Apollo Playground enabled.
 
+### Swagger API Documentation
+
+Swagger UI is available at `http://localhost:5000/api` after starting the server. It documents the existing REST routes and the complete GraphQL API through the `POST /graphql` transport endpoint.
+
+GraphQL uses one HTTP endpoint rather than one URL per query or mutation. In Swagger UI, choose an operation from the request-body **Examples** dropdown, edit its query or variables, and execute it against `/graphql`. For protected operations, click **Authorize** and enter `Bearer <jwt-token>`.
+
+GraphQL requests use this JSON shape:
+
+```json
+{
+  "query": "query GetAllChannels($data: GetChannelsInput!) { getAllChannels(data: $data) { totalCount } }",
+  "operationName": "GetAllChannels",
+  "variables": {
+    "data": { "limit": 10, "offset": 0 }
+  }
+}
+```
+
 ### Example Queries
 
 ```graphql
@@ -172,7 +197,9 @@ query {
 
 # Get Google Business listings
 query {
-  getAllGoogleProfiles(data: { limit: 20, offset: 0, category: "restaurants", country: "USA" }) {
+  getAllGoogleProfiles(
+    data: { limit: 20, offset: 0, category: "restaurants", country: "USA" }
+  ) {
     profiles {
       id
       company
@@ -186,7 +213,9 @@ query {
 
 # Get LinkedIn profiles
 query {
-  getLinkedinProfiles(data: { limit: 15, offset: 0, title: "CEO", company: "Google" }) {
+  getLinkedinProfiles(
+    data: { limit: 15, offset: 0, title: "CEO", company: "Google" }
+  ) {
     profiles {
       id
       fullName
@@ -216,14 +245,16 @@ query {
 ```graphql
 # Register a new user via Google OAuth
 mutation {
-  createUser(input: {
-    email: "user@example.com"
-    firstName: "John"
-    lastName: "Doe"
-    avatarLink: "https://example.com/avatar.jpg"
-    token: "google_oauth_token"
-    authProvider: Google
-  }) {
+  createUser(
+    input: {
+      email: "user@example.com"
+      firstName: "John"
+      lastName: "Doe"
+      avatarLink: "https://example.com/avatar.jpg"
+      token: "google_oauth_token"
+      authProvider: Google
+    }
+  ) {
     id
     email
     accessRole
@@ -232,13 +263,17 @@ mutation {
 
 # Bulk import YouTube channels
 mutation {
-  addYoutubeLeads(input: [{
-    channel_name: "Tech Channel"
-    channel_url: "https://youtube.com/channel/123"
-    subscribers: 100000
-    joined: "2020-01-01"
-    location: "USA"
-  }]) {
+  addYoutubeLeads(
+    input: [
+      {
+        channel_name: "Tech Channel"
+        channel_url: "https://youtube.com/channel/123"
+        subscribers: 100000
+        joined: "2020-01-01"
+        location: "USA"
+      }
+    ]
+  ) {
     id
     channel_name
   }
@@ -246,10 +281,7 @@ mutation {
 
 # Unlock LinkedIn profile access
 mutation {
-  unlockLinkedinLead(input: {
-    userId: "user123"
-    linkedinId: "linkedin456"
-  }) {
+  unlockLinkedinLead(input: { userId: "user123", linkedinId: "linkedin456" }) {
     userId
     linkedinId
   }
@@ -257,11 +289,9 @@ mutation {
 
 # Add a user review
 mutation {
-  addUserReview(input: {
-    id: "user123"
-    rating: 4.5
-    reviewText: "Great service!"
-  }) {
+  addUserReview(
+    input: { id: "user123", rating: 4.5, reviewText: "Great service!" }
+  ) {
     id
     rating
     reviewText
@@ -282,6 +312,7 @@ The application uses TypeORM with MySQL. Key entities:
 - **Request:** User-submitted data requests with status tracking
 
 All entities include audit fields:
+
 - `id` (UUID primary key)
 - `createdAt` / `updatedAt` (timestamps)
 - `createdBy` / `updatedBy` (audit trail)
@@ -323,6 +354,7 @@ Authorization: Bearer <jwt_token>
 ## Deployment
 
 ### Heroku
+
 The project includes a `Procfile` for Heroku deployment:
 
 ```
@@ -332,6 +364,7 @@ web: npm run start:prod
 Set environment variables in Heroku Config Vars before deploying.
 
 ### Docker
+
 (Optional) Create a Dockerfile and docker-compose.yml for containerized deployment.
 
 ## Contributing
