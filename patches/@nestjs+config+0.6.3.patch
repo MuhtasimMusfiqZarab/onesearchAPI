@@ -1,0 +1,26 @@
+diff --git a/node_modules/@nestjs/config/dist/config.module.js b/node_modules/@nestjs/config/dist/config.module.js
+--- a/node_modules/@nestjs/config/dist/config.module.js
++++ b/node_modules/@nestjs/config/dist/config.module.js
+@@ -152,3 +152,3 @@
+-        if (!util_1.isObject(config)) {
++        if (config === null || typeof config !== 'object') {
+             return;
+         }
+diff --git a/node_modules/@nestjs/config/dist/config.service.js b/node_modules/@nestjs/config/dist/config.service.js
+--- a/node_modules/@nestjs/config/dist/config.service.js
++++ b/node_modules/@nestjs/config/dist/config.service.js
+@@ -39,1 +39,1 @@
+-        if (!util_1.isUndefined(validatedEnvValue)) {
++        if (typeof validatedEnvValue !== 'undefined') {
+@@ -43,1 +43,1 @@
+-        if (!util_1.isUndefined(processEnvValue)) {
++        if (typeof processEnvValue !== 'undefined') {
+@@ -47,1 +47,1 @@
+-        if (!util_1.isUndefined(internalValue)) {
++        if (typeof internalValue !== 'undefined') {
+@@ -54,1 +54,1 @@
+-        return util_1.isUndefined(cachedValue)
++        return typeof cachedValue === 'undefined'
+@@ -66,1 +66,1 @@
+-            return !util_1.isUndefined(cachedValue) ? cachedValue : defaultValue;
++            return typeof cachedValue !== 'undefined' ? cachedValue : defaultValue;
