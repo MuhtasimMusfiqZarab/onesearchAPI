@@ -1,5 +1,4 @@
 import { Args, Query, Resolver, Mutation } from '@nestjs/graphql';
-import { NotFoundException } from '@nestjs/common';
 import { RequestService } from './request.service';
 import {
   RequestType,
@@ -37,11 +36,7 @@ export class RequestResolver {
   async getRequest(
     @Args('id', { type: () => String }) id: string,
   ): Promise<RequestType | null> {
-    const channel = await this.requestService.getRequestById(id);
-    if (!channel) {
-      throw new NotFoundException(id);
-    }
-    return null;
+    return this.requestService.getRequestById(id);
   }
   // //get all channels
   @UseGuards(AdminGuard)
