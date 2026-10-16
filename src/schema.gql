@@ -269,6 +269,7 @@ type Query {
   getRequestCountries: RequestCountriesType
   getRequestPlatforms: RequestPlatformsType
   getRequestStatuses: RequestStatusType
+  getUser(id: String!): UserType!
 }
 
 input RegistrationInput {

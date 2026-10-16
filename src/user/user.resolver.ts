@@ -32,6 +32,15 @@ export default class UserResolver {
   currentUser(@CurrentUser() user: any) {
     return this.userService.findOne(user.userId);
   }
+
+  @Query(() => UserType)
+  @UseGuards(AdminGuard)
+  async getUser(
+    @Args('id', { type: () => String }) id: string,
+  ): Promise<UserType> {
+    return this.userService.findOne(id);
+  }
+
   //get all the users data
   @Query(() => GetAllUsersType)
   @UseGuards(AdminGuard)
