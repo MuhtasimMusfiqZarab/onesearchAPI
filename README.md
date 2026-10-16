@@ -86,32 +86,13 @@ Each module follows a consistent pattern:
 
 ### Environment Variables
 
-Create a `.env` file in the project root:
+Rename `.example.env` to `.env` in the project root. Keep an existing local `.env` instead of overwriting it.
 
-```env
-# Database
-DB_HOST=localhost
-DB_USER=root
-DB_PASSWORD=your_password
-DB_NAME=onesearch_db
-
-# Server
-PORT=5000
-
-# Authentication
-JWT_SECRET=your_jwt_secret
-redirectURLAfterSignToken=http://localhost:3000/auth/callback?token=
-
-# Google OAuth
-GOOGLE_CLIENT_ID=your_google_client_id
-GOOGLE_CLIENT_SECRET=your_google_client_secret
-
-# Admin
-DEFAULT_ADMIN_EMAIL=admin@example.com
-
-# Stripe
-STRIPE_SECRET_KEY=your_stripe_secret_key
+```sh
+mv .example.env .env
 ```
+
+Set the database, OAuth, JWT, and Stripe values in `.env` for your local environment.
 
 ### Installation & Setup
 
@@ -119,10 +100,7 @@ STRIPE_SECRET_KEY=your_stripe_secret_key
 # Install dependencies
 npm install
 
-# Run database migrations
-npm run typeorm migration:run
-
-# Start development server
+# Start the development server
 npm run start:dev
 
 # Build for production
