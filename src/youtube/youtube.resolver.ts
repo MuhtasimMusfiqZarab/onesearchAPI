@@ -54,7 +54,7 @@ export class YoutubeResolver {
   @Query(() => ChannelsType, { nullable: true })
   async getAllChannels(
     @Args('data') data: GetChannelsInput,
-  ): Promise<ChannelsType> {
+  ): Promise<ChannelsType | null> {
     return await this.youtubeService.getAllChannels(data);
   }
 

@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { LinkedinRepository } from './linkedin.repository';
+import Linkedin from './linkedin.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { GetLinkedinProfileInput } from './linkedin.input';
 import {
@@ -10,14 +10,14 @@ import {
 } from './linkedin.type';
 
 import { isValidString } from '../utils/validation';
-import { ILike } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { defaultOrder } from '../utils/query';
 
 @Injectable()
 export class LinkedinService {
   constructor(
-    @InjectRepository(LinkedinRepository)
-    private linkedinRepository: LinkedinRepository,
+    @InjectRepository(Linkedin)
+    private linkedinRepository: Repository<Linkedin>,
   ) {}
 
   async findOne(id: string): Promise<LinkedinBasicType> {
@@ -73,7 +73,7 @@ export class LinkedinService {
   }
 
   async getLinkedinProfileById(id: string): Promise<LinkedinBasicType | null> {
-    const found = await this.linkedinRepository.findOne({ id });
+    const found = await this.linkedinRepository.findOne({ where: { id } });
     if (!found) {
       throw new NotFoundException(`Linkedin Profile with id ${id} not found!`);
     }

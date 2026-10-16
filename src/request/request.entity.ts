@@ -1,4 +1,4 @@
-import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, Column, ManyToOne, Relation } from 'typeorm';
 import { ExtendedBaseEntity } from '../config/_base.entity';
 
 import { RequestStatusEnum } from './request.enum';
@@ -33,7 +33,7 @@ export default class Request extends ExtendedBaseEntity {
     () => User,
     user => user.requests,
   )
-  user: User;
+  user: Relation<User>;
 
   @Column({ type: 'varchar', nullable: true })
   userId: string;

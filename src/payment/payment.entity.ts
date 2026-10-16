@@ -1,4 +1,4 @@
-import { Entity, Column, ManyToOne } from 'typeorm';
+import { Entity, Column, ManyToOne, Relation } from 'typeorm';
 import { ExtendedBaseEntity } from '../config/_base.entity';
 import User from 'src/user/user.entity';
 
@@ -14,5 +14,5 @@ export default class Payment extends ExtendedBaseEntity {
     () => User,
     user => user.payments,
   )
-  user: User;
+  user: Relation<User>;
 }
