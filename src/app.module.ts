@@ -7,7 +7,6 @@ import { ConfigModule } from '@nestjs/config';
 import { join } from 'path';
 
 //custom modules
-import { SubscriptionsModule } from './subscriptions/subscriptions.module';
 import { YoutubeModule } from './youtube/youtube.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './user/user.module';
@@ -22,7 +21,6 @@ const modules = [
   YoutubeModule,
   AuthModule,
   UsersModule,
-  SubscriptionsModule,
   LinkedinModule,
   GoogleModule,
   ProfileModule,
