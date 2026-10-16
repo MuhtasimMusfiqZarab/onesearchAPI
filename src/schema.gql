@@ -301,11 +301,6 @@ type RequestStatusType {
   totalCount: Int
 }
 
-type RequestsType {
-  requests: [RequestType!]
-  totalCount: Int
-}
-
 type RequestType {
   category: String
   createdAt: DateTime!
@@ -319,6 +314,11 @@ type RequestType {
   updatedAt: DateTime!
   updatedBy: String!
   userId: String!
+}
+
+type RequestsType {
+  requests: [RequestType!]
+  totalCount: Int
 }
 
 enum UserAccessRole {

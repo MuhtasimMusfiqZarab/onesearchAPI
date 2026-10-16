@@ -1,6 +1,7 @@
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, VerifyCallback } from 'passport-google-oauth20';
 import { config } from 'dotenv';
+import { Request } from 'express';
 
 import { Injectable } from '@nestjs/common';
 
@@ -10,15 +11,16 @@ config();
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
   constructor() {
     super({
-      clientID: process.env.OAUTH_CLIENT_ID,
-      clientSecret: process.env.OAUTH_CLIENT_SECRET,
-      callbackURL: process.env.CALLBACK_URL,
+      clientID: process.env.OAUTH_CLIENT_ID!,
+      clientSecret: process.env.OAUTH_CLIENT_SECRET!,
+      callbackURL: process.env.CALLBACK_URL!,
       scope: ['email', 'profile'],
-      concent: true,
+      passReqToCallback: true,
     });
   }
 
   async validate(
+    req: Request,
     accessToken: string,
     refreshToken: string,
     profile: any,

@@ -6,6 +6,7 @@ import {
   OneToMany,
   ManyToMany,
   JoinTable,
+  Relation,
 } from 'typeorm';
 import { ExtendedBaseEntity } from '../config/_base.entity';
 import { UserAccessRole } from './user.enum';
@@ -69,7 +70,7 @@ export default class User extends ExtendedBaseEntity {
 
   @OneToOne(() => Profile)
   @JoinColumn()
-  profile: Profile;
+  profile: Relation<Profile>;
 
   @OneToMany(
     () => Payment,
@@ -78,7 +79,7 @@ export default class User extends ExtendedBaseEntity {
       nullable: true,
     },
   )
-  payments: Payment[];
+  payments: Relation<Payment[]>;
 
   @OneToMany(
     () => Request,
@@ -87,19 +88,19 @@ export default class User extends ExtendedBaseEntity {
       nullable: true,
     },
   )
-  requests: Request[];
+  requests: Relation<Request[]>;
 
   @ManyToMany(
     () => Youtube,
     youtube => youtube.users,
   )
   @JoinTable({ name: 'user_youtube' })
-  youtube: Youtube[];
+  youtube: Relation<Youtube[]>;
 
   @ManyToMany(
     () => Linkedin,
     linkedin => linkedin.users,
   )
   @JoinTable({ name: 'user_linkedin' })
-  linkedin: Linkedin[];
+  linkedin: Relation<Linkedin[]>;
 }

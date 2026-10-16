@@ -1,4 +1,4 @@
-import { Entity, Column, ManyToMany } from 'typeorm';
+import { Entity, Column, ManyToMany, Relation } from 'typeorm';
 import { ExtendedBaseEntity } from '../config/_base.entity';
 
 import User from '../user/user.entity';
@@ -60,5 +60,5 @@ export default class Youtube extends ExtendedBaseEntity {
     () => User,
     user => user.youtube,
   )
-  users: User[];
+  users: Relation<User[]>;
 }

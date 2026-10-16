@@ -16,7 +16,7 @@ OneSearchAPI is designed for lead generation and management, enabling users to:
 ## Stack
 
 - **Language:** TypeScript (99%)
-- **Framework:** NestJS 7.x
+- **Framework:** NestJS 12.1.3
 - **API:** GraphQL with Apollo Server
 - **Database:** PostgreSQL via TypeORM
 - **Authentication:** Google OAuth 2.0 with JWT
@@ -159,7 +159,7 @@ npm run test:e2e
 
 ## GraphQL API
 
-The GraphQL server runs at `http://localhost:5000/graphql` with Apollo Playground enabled.
+The GraphQL server runs at `http://localhost:5000/graphql` with Apollo's local landing page enabled in development.
 
 ### Swagger API Documentation
 

@@ -3,17 +3,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { LinkedinService } from './linkedin.service';
 import { LinkedinResolver } from './linkedin.resolver';
-import { LinkedinRepository } from './linkedin.repository';
+import Linkedin from './linkedin.entity';
 
 import { AuthModule } from '../auth/auth.module';
 import { UsersModule } from '../user/user.module';
 
 @Module({
-  imports: [
-    AuthModule,
-    UsersModule,
-    TypeOrmModule.forFeature([LinkedinRepository]),
-  ],
+  imports: [AuthModule, UsersModule, TypeOrmModule.forFeature([Linkedin])],
   providers: [LinkedinService, LinkedinResolver],
 })
 export class LinkedinModule {}

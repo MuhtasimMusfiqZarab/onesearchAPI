@@ -1,9 +1,0 @@
-diff --git a/node_modules/@nestjs/typeorm/dist/common/typeorm.utils.js b/node_modules/@nestjs/typeorm/dist/common/typeorm.utils.js
---- a/node_modules/@nestjs/typeorm/dist/common/typeorm.utils.js
-+++ b/node_modules/@nestjs/typeorm/dist/common/typeorm.utils.js
-@@ -12,1 +12,1 @@
--    if (util_1.isNullOrUndefined(entity)) {
-+    if (entity == null) {
-@@ -28,1 +28,1 @@
--    if (util_1.isNullOrUndefined(repository)) {
-+    if (repository == null) {

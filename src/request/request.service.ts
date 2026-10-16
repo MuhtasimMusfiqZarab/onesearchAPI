@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { RequestRepository } from './request.repository';
-import { ILike } from 'typeorm';
+import Request from './request.entity';
+import { ILike, Repository } from 'typeorm';
 
 import { GetRequestInput } from './request.input';
 import {
@@ -22,8 +22,8 @@ import { UserService } from 'src/user/user.service';
 @Injectable()
 export class RequestService {
   constructor(
-    @InjectRepository(RequestRepository)
-    private requestRepository: RequestRepository,
+    @InjectRepository(Request)
+    private requestRepository: Repository<Request>,
     private userService: UserService,
   ) {}
 
@@ -37,7 +37,7 @@ export class RequestService {
   }
 
   async getRequestById(id: string): Promise<RequestType | null> {
-    const found = await this.requestRepository.findOne({ id });
+    const found = await this.requestRepository.findOne({ where: { id } });
     if (!found) {
       throw new NotFoundException(`youtube channel with id ${id} not found!`);
     }

@@ -1,9 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { GoogleRepository } from './google.repository';
+import Google from './google.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { isValidString } from '../utils/validation';
-import { ILike } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { defaultOrder } from '../utils/query';
 
 import {
@@ -18,8 +18,8 @@ import { BulkGoogleInput, GetGoogleInput } from './google.input';
 @Injectable()
 export class GoogleService {
   constructor(
-    @InjectRepository(GoogleRepository)
-    private googleRepository: GoogleRepository,
+    @InjectRepository(Google)
+    private googleRepository: Repository<Google>,
   ) {}
 
   //add google leads
@@ -65,7 +65,7 @@ export class GoogleService {
   }
 
   async getGoogleProfileById(id: string): Promise<GoogleBasicType | null> {
-    const found = await this.googleRepository.findOne({ id });
+    const found = await this.googleRepository.findOne({ where: { id } });
     if (!found) {
       throw new NotFoundException(`Google Profile with id ${id} not found!`);
     }

@@ -9,17 +9,15 @@ import {
 import { UserAccessRole } from './user.enum';
 import { GetAllUsersType, GetAllUserReviewsType } from './user.type';
 import { isValidString } from '../utils/validation';
-import { ILike } from 'typeorm';
+import { ILike, IsNull, Not, Repository } from 'typeorm';
 import { UserType } from './user.type';
-import { UserRepository } from './user.repository';
 import { InjectRepository } from '@nestjs/typeorm';
-import { IsNull, Not } from 'typeorm';
 
 @Injectable()
 export class UserService {
   constructor(
-    @InjectRepository(UserRepository)
-    private userRepository: UserRepository,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
   ) {}
 
   async findOne(id: string): Promise<UserType> {
@@ -34,18 +32,20 @@ export class UserService {
   }
 
   async buyCredits(id: string): Promise<any> {
-    const current = await this.userRepository.findOne({ id });
-
-    const found = await this.userRepository
+    const result = await this.userRepository
       .createQueryBuilder()
       .update(User)
-      .set({ availableCredits: current.availableCredits + 1000 })
+      .set({
+        availableCredits: () => 'COALESCE("availableCredits", 0) + 1000',
+      })
       .where('id = :id', { id })
       .execute();
-    if (!found) {
+
+    if (!result.affected) {
       throw new NotFoundException(`User with id ${id} not found!`);
     }
-    return found;
+
+    return this.userRepository.findOne({ where: { id } });
   }
 
   async createUser(input: RegistrationInput): Promise<UserType> {
