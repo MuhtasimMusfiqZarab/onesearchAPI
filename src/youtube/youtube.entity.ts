@@ -26,7 +26,7 @@ export default class Youtube extends ExtendedBaseEntity {
   @Column({ type: 'varchar', nullable: true })
   channel_name: string;
 
-  @Column({ type: 'datetime', nullable: true })
+  @Column({ type: 'timestamp', nullable: true })
   timestamp: Date;
 
   @Column({ type: 'text', nullable: true })

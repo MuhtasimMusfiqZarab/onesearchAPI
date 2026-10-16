@@ -18,7 +18,7 @@ OneSearchAPI is designed for lead generation and management, enabling users to:
 - **Language:** TypeScript (99%)
 - **Framework:** NestJS 7.x
 - **API:** GraphQL with Apollo Server
-- **Database:** MySQL via TypeORM
+- **Database:** PostgreSQL via TypeORM
 - **Authentication:** Google OAuth 2.0 with JWT
 - **Payments:** Stripe integration
 - **Validation:** class-validator, class-transformer
@@ -81,7 +81,7 @@ Each module follows a consistent pattern:
 ### Prerequisites
 
 - Node.js 12+
-- MySQL 5.7+
+- PostgreSQL 16+
 - npm or yarn
 
 ### Environment Variables
@@ -301,7 +301,7 @@ mutation {
 
 ## Database Schema
 
-The application uses TypeORM with MySQL. Key entities:
+The application uses TypeORM with PostgreSQL. Key entities:
 
 - **User:** Core user account with OAuth info, access role, and credits
 - **Profile:** Extended user profile (phone, city, country, credit balance)
