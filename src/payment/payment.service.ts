@@ -21,17 +21,19 @@ export class PaymentService {
   async processPayment(req, res) {
     if (
       !Array.isArray(req.body.items) ||
-      req.body.items.some(item => !storeItems.has(item.id))
+      req.body.items.some((item) => !storeItems.has(item.id))
     ) {
       return res.status(400).json({ error: 'Invalid item selection' });
     }
+
+    console.log('Process payment request is done');
 
     try {
       const session = await stripe.checkout.sessions.create({
         customer_email: req.user.email,
         payment_method_types: ['card'],
         mode: 'payment',
-        line_items: req.body.items.map(item => {
+        line_items: req.body.items.map((item) => {
           const storeItem = storeItems.get(item.id)!;
           return {
             price_data: {
