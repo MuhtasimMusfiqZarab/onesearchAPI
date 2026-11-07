@@ -1,7 +1,7 @@
 require('dotenv').config();
 
 const readline = require('readline');
-const { Client } = require('pg');
+const sqlite3 = require('sqlite3').verbose();
 
 const confirmationText = 'DROP ALL TABLES';
 
@@ -13,12 +13,24 @@ function askForConfirmation() {
 
   return new Promise(resolve => {
     interface.question(
-      `This will permanently remove all objects in the public schema. Type "${confirmationText}" to continue: `,
+      `This will permanently remove all objects from the SQLite database. Type "${confirmationText}" to continue: `,
       answer => {
         interface.close();
         resolve(answer === confirmationText);
       },
     );
+  });
+}
+
+function run(database, sql) {
+  return new Promise((resolve, reject) => {
+    database.run(sql, error => (error ? reject(error) : resolve()));
+  });
+}
+
+function all(database, sql) {
+  return new Promise((resolve, reject) => {
+    database.all(sql, (error, rows) => (error ? reject(error) : resolve(rows)));
   });
 }
 
@@ -28,20 +40,35 @@ async function dropAllTables() {
     return;
   }
 
-  const client = new Client({
-    host: process.env.DB_HOST,
-    port: Number(process.env.DB_PORT || 5432),
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-  });
+  const database = new sqlite3.Database(
+    process.env.SQLITE_DATABASE || 'onesearch.sqlite',
+  );
 
   try {
-    await client.connect();
-    await client.query('DROP SCHEMA public CASCADE; CREATE SCHEMA public;');
-    console.log('All objects in the public schema were dropped.');
+    await run(database, 'PRAGMA foreign_keys = OFF');
+    const objects = await all(
+      database,
+      `SELECT name, type
+       FROM sqlite_master
+       WHERE (type = 'table' OR type = 'view')
+         AND name NOT LIKE 'sqlite_%'`,
+    );
+
+    for (const object of objects) {
+      await run(
+        database,
+        `DROP ${object.type.toUpperCase()} IF EXISTS "${object.name.replace(
+          /"/g,
+          '""',
+        )}"`,
+      );
+    }
+
+    console.log('All SQLite tables and views were dropped.');
   } finally {
-    await client.end();
+    await new Promise((resolve, reject) =>
+      database.close(error => (error ? reject(error) : resolve())),
+    );
   }
 }
 

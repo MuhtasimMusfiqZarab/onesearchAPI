@@ -20,7 +20,7 @@ export default class Request extends ExtendedBaseEntity {
   datasize: string;
 
   @Column({
-    type: 'enum',
+    type: 'simple-enum',
     enum: RequestStatusEnum,
     default: RequestStatusEnum.Requested,
   })

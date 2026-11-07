@@ -14,7 +14,7 @@ export abstract class ExtendedBaseEntity extends BaseEntity {
   id: string;
 
   @Field()
-  @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
+  @CreateDateColumn({ name: 'created_at', type: 'datetime' })
   createdAt: Date;
 
   @Field()
@@ -22,7 +22,7 @@ export abstract class ExtendedBaseEntity extends BaseEntity {
   createdBy: string;
 
   @Field()
-  @UpdateDateColumn({ name: 'updated_at', type: 'timestamp' })
+  @UpdateDateColumn({ name: 'updated_at', type: 'datetime' })
   updatedAt: Date;
 
   @Field()

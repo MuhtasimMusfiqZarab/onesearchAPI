@@ -42,7 +42,7 @@ export default class Google extends ExtendedBaseEntity {
   @Column({ type: 'varchar', nullable: true })
   total_reviews: string;
 
-  @Column({ type: 'json', nullable: true })
+  @Column({ type: 'simple-json', nullable: true })
   review_data: string;
 
   @Column({ type: 'varchar', nullable: true })

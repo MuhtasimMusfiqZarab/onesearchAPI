@@ -14,7 +14,7 @@ export default class Youtube extends ExtendedBaseEntity {
   })
   channel_url: string;
 
-  @Column({ type: 'json', nullable: true })
+  @Column({ type: 'simple-json', nullable: true })
   bio_email: string[];
 
   @Column({ type: 'bigint', nullable: true })
@@ -26,7 +26,7 @@ export default class Youtube extends ExtendedBaseEntity {
   @Column({ type: 'varchar', nullable: true })
   channel_name: string;
 
-  @Column({ type: 'timestamp', nullable: true })
+  @Column({ type: 'datetime', nullable: true })
   timestamp: Date;
 
   @Column({ type: 'text', nullable: true })

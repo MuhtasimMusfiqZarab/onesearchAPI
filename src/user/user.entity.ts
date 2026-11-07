@@ -42,7 +42,7 @@ export default class User extends ExtendedBaseEntity {
   isActive: boolean;
 
   @Column({
-    type: 'enum',
+    type: 'simple-enum',
     enum: UserAccessRole,
     default: UserAccessRole.Demo,
   })
