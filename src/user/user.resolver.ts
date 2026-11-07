@@ -34,7 +34,6 @@ export default class UserResolver {
   }
 
   @Query(() => UserType)
-  @UseGuards(GqlAuthGuard)
   async getUser(
     @Args('id', { type: () => String }) id: string,
   ): Promise<UserType> {

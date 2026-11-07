@@ -3,7 +3,11 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import Review from './review.entity';
-import { AddReviewInput, GetReviewInput } from './review.input';
+import {
+  AddReviewInput,
+  EditReviewInput,
+  GetReviewInput,
+} from './review.input';
 import { ReviewType, ReviewsType } from './review.type';
 
 @Injectable()
@@ -27,6 +31,20 @@ export class ReviewService {
       throw new NotFoundException(`Review with id ${id} not found!`);
     }
     return found;
+  }
+
+  async editReview(input: EditReviewInput): Promise<ReviewType> {
+    const { id, reviewText, rating } = input;
+    const review = await this.reviewRepository.findOne({ where: { id } });
+
+    if (!review) {
+      throw new NotFoundException(`Review with id ${id} not found!`);
+    }
+
+    if (reviewText !== undefined) review.reviewText = reviewText;
+    if (rating !== undefined) review.rating = rating;
+
+    return this.reviewRepository.save(review);
   }
 
   async getAllReviews(

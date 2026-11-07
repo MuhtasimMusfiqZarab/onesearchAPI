@@ -14,6 +14,18 @@ export class AddReviewInput {
 }
 
 @InputType()
+export class EditReviewInput {
+  @Field()
+  id: string;
+
+  @Field({ nullable: true })
+  reviewText: string;
+
+  @Field(() => Float, { nullable: true })
+  rating: number;
+}
+
+@InputType()
 export class GetReviewInput {
   @Field({ nullable: true })
   userId: string;

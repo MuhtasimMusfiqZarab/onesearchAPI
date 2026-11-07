@@ -1,7 +1,11 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
 import { ReviewService } from './review.service';
-import { AddReviewInput, GetReviewInput } from './review.input';
+import {
+  AddReviewInput,
+  EditReviewInput,
+  GetReviewInput,
+} from './review.input';
 import { ReviewType, ReviewsType } from './review.type';
 import { AuthGuard } from '../shared/guards/user.guard';
 import { GqlAuthGuard } from '../shared/guards/gql-auth.guard';
@@ -19,6 +23,14 @@ export class ReviewResolver {
     return this.reviewService.addReview(input);
   }
 
+  @Mutation(() => ReviewType)
+  @UseGuards(AuthGuard)
+  async editReview(
+    @Args('input', { type: () => EditReviewInput }) input: EditReviewInput,
+  ): Promise<ReviewType> {
+    return this.reviewService.editReview(input);
+  }
+
   @Query(() => ReviewType, { nullable: true })
   @UseGuards(AuthGuard)
   async getReview(
@@ -28,7 +40,6 @@ export class ReviewResolver {
   }
 
   @Query(() => ReviewsType, { nullable: true })
-  @UseGuards(GqlAuthGuard)
   async getAllReviews(
     @CurrentUser() user: { userId?: string },
     @Args('data') data: GetReviewInput,
