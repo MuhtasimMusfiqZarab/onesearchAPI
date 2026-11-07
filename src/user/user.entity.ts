@@ -16,6 +16,7 @@ import Payment from 'src/payment/payment.entity';
 import Request from 'src/request/request.entity';
 import Youtube from 'src/youtube/youtube.entity';
 import Linkedin from 'src/linkedin/linkedin.entity';
+import Review from 'src/review/review.entity';
 
 @Entity()
 export default class User extends ExtendedBaseEntity {
@@ -89,6 +90,12 @@ export default class User extends ExtendedBaseEntity {
     },
   )
   requests: Relation<Request[]>;
+
+  @OneToOne(
+    () => Review,
+    review => review.user,
+  )
+  review: Relation<Review>;
 
   @ManyToMany(
     () => Youtube,

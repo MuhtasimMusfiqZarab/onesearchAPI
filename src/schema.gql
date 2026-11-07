@@ -17,6 +17,12 @@ input AddReviewInput {
   reviewText: String
 }
 
+input AddReviewRecordInput {
+  rating: Float!
+  reviewText: String
+  userId: String!
+}
+
 enum AuthProvider {
   Google
 }
@@ -130,6 +136,12 @@ input GetRequestInput {
   status: String
 }
 
+input GetReviewInput {
+  limit: Float!
+  offset: Float!
+  userId: String
+}
+
 input GetUserReviewInput {
   limit: Float!
   offset: Float!
@@ -216,6 +228,7 @@ type Mutation {
   addGoogleLeads(input: [BulkGoogleInput!]!): [GoogleBasicType!]!
   addLinkedinLeads(input: [BulkLinkedinInput!]!): [LinkedinBasicType!]!
   addRequest(input: [AddRequestInput!]!): RequestType!
+  addReview(input: AddReviewRecordInput!): ReviewType!
   addUserReview(input: AddReviewInput!): UserType!
   addUserYoutube(input: AddReviewInput!): UserType!
   addYoutubeLeads(input: [BulkYoutubeInput!]!): [YoutubeType!]!
@@ -253,6 +266,7 @@ type Query {
   getAllGoogleProfiles(data: GetGoogleInput!): GoogleProfilesType
   getAllRequests(data: GetRequestInput!): RequestsType
   getAllRequestsOfUser(data: GetRequestInput!): RequestsType
+  getAllReviews(data: GetReviewInput!): ReviewsType
   getAllUserReviews(data: GetUserReviewInput!): GetAllUserReviewsType!
   getAllUsers(data: GetUsersInput!): GetAllUsersType!
   getChannelCountries: LocationsType
@@ -269,6 +283,7 @@ type Query {
   getRequestCountries: RequestCountriesType
   getRequestPlatforms: RequestPlatformsType
   getRequestStatuses: RequestStatusType
+  getReview(id: String!): ReviewType
   getUser(id: String!): UserType!
 }
 
@@ -321,6 +336,23 @@ type RequestsType {
   totalCount: Int
 }
 
+type ReviewType {
+  createdAt: DateTime!
+  createdBy: String
+  id: ID!
+  rating: Float!
+  reviewText: String
+  updatedAt: DateTime!
+  updatedBy: String
+  userId: String!
+}
+
+type ReviewsType {
+  currentUser: ReviewType
+  reviews: [ReviewType!]
+  totalCount: Int
+}
+
 enum UserAccessRole {
   Admin
   Demo
@@ -368,6 +400,7 @@ type UserType {
   profile: ProfileType
   rating: Float
   requests: [RequestType!]
+  review: ReviewType
   reviewText: String
   token: String
   updatedAt: DateTime!

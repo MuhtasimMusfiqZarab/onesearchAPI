@@ -16,6 +16,7 @@ import { GoogleModule } from './google/google.module';
 import { ProfileModule } from './profile/profile.module';
 import { PaymentModule } from './payment/payment.module';
 import { RequestModule } from './request/request.module';
+import { ReviewModule } from './review/review.module';
 
 //all the modules
 const modules = [
@@ -27,6 +28,7 @@ const modules = [
   ProfileModule,
   PaymentModule,
   RequestModule,
+  ReviewModule,
 ];
 
 @Module({
