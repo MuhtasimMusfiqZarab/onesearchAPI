@@ -95,7 +95,10 @@ export class YoutubeService {
     });
   }
 
-  async getAllChannels(data: GetChannelsInput): Promise<ChannelsType | null> {
+  async getAllChannels(
+    data: GetChannelsInput,
+    userId: string,
+  ): Promise<ChannelsType | null> {
     const {
       socialblade_category,
       location,
@@ -136,17 +139,46 @@ export class YoutubeService {
           take: limit,
         });
 
-        return { channels: seededChannels, totalCount: seededTotalCount };
+        return {
+          channels: await this.addUnlockStatus(seededChannels, userId),
+          totalCount: seededTotalCount,
+        };
       }
 
       if (!channels) {
         throw new NotFoundException(`No Channel found@!`);
       }
 
-      return { channels, totalCount };
+      return {
+        channels: await this.addUnlockStatus(channels, userId),
+        totalCount,
+      };
     } catch (error) {
       throw new Error(error);
     }
+  }
+
+  private async addUnlockStatus(
+    channels: Youtube[],
+    userId: string,
+  ): Promise<Youtube[]> {
+    if (channels.length === 0) {
+      return channels;
+    }
+
+    const unlockedChannels = await this.youtubeRepository
+      .createQueryBuilder('youtube')
+      .innerJoin('youtube.users', 'user', 'user.id = :userId', { userId })
+      .where('youtube.id IN (:...channelIds)', {
+        channelIds: channels.map(channel => channel.id),
+      })
+      .select('youtube.id', 'id')
+      .getRawMany<{ id: string }>();
+    const unlockedIds = new Set(unlockedChannels.map(channel => channel.id));
+
+    return channels.map(channel =>
+      Object.assign(channel, { isUnlocked: unlockedIds.has(channel.id) }),
+    );
   }
 
   //get all categories

@@ -19,6 +19,7 @@ import {
 import { YoutubeType, UserYoutubeType } from './youtube.type';
 
 import { UserService } from 'src/user/user.service';
+import { CurrentUser } from 'src/shared/decorators/current-user.decorator';
 
 @Resolver(() => YoutubeBasicType)
 export class YoutubeResolver {
@@ -54,8 +55,9 @@ export class YoutubeResolver {
   @Query(() => ChannelsType, { nullable: true })
   async getAllChannels(
     @Args('data') data: GetChannelsInput,
+    @CurrentUser() user: { userId: string },
   ): Promise<ChannelsType | null> {
-    return await this.youtubeService.getAllChannels(data);
+    return await this.youtubeService.getAllChannels(data, user.userId);
   }
 
   @UseGuards(AuthGuard)
@@ -76,17 +78,12 @@ export class YoutubeResolver {
   async unlockYoutubeLead(
     @Args('input', { type: () => UserYoutubeInput, nullable: false })
     input: UserYoutubeInput,
+    @CurrentUser() user: { userId: string },
   ): Promise<any> {
-    const { userId, youtubeId } = input;
-    const user = await this.userService.findOne(userId);
-    const youtube = await this.youtubeService.findOne(youtubeId);
+    const { youtubeId } = input;
+    await this.youtubeService.findOne(youtubeId);
+    await this.userService.unlockYoutubeLead(user.userId, youtubeId);
 
-    user.youtube = [...user.youtube, youtube];
-    youtube.users = [...youtube.users, user];
-
-    await user.save();
-    await youtube.save();
-
-    return { userId, youtubeId };
+    return { userId: user.userId, youtubeId };
   }
 }

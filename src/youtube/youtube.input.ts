@@ -79,8 +79,5 @@ export class GetChannelsInput {
 @InputType()
 export class UserYoutubeInput {
   @Field()
-  userId: string;
-
-  @Field({ nullable: true })
   youtubeId: string;
 }

@@ -77,6 +77,9 @@ export class YoutubeBasicType extends ExtendedBaseEntity {
   @Field({ nullable: true })
   location: string;
 
+  @Field(() => Boolean, { nullable: true })
+  isUnlocked?: boolean;
+
   @Field({ nullable: true })
   updatedAt: Date;
 
