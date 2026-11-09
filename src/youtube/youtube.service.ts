@@ -1,5 +1,9 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import Youtube from './youtube.entity';
 import { ILike, Repository } from 'typeorm';
@@ -52,6 +56,28 @@ export class YoutubeService {
       throw new NotFoundException(`youtube channel with id ${id} not found!`);
     }
     return found;
+  }
+
+  async getUnlockedChannelByUser(
+    id: string,
+    userId: string,
+  ): Promise<YoutubeBasicType> {
+    const channel = await this.youtubeRepository
+      .createQueryBuilder('youtube')
+      .innerJoin('youtube.users', 'user', 'user.id = :userId', { userId })
+      .where('youtube.id = :id', { id })
+      .getOne();
+
+    if (channel) {
+      return Object.assign(channel, { isUnlocked: true });
+    }
+
+    const exists = await this.youtubeRepository.exist({ where: { id } });
+    if (!exists) {
+      throw new NotFoundException(`youtube channel with id ${id} not found!`);
+    }
+
+    throw new ForbiddenException('Unlock this channel to view its data');
   }
 
   /**

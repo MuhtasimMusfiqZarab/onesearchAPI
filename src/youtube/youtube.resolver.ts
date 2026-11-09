@@ -1,5 +1,4 @@
 import { Args, Query, Resolver, Int, Mutation } from '@nestjs/graphql';
-import { NotFoundException } from '@nestjs/common';
 import { YoutubeService } from './youtube.service';
 import {
   CategoriesType,
@@ -43,12 +42,9 @@ export class YoutubeResolver {
   @Query(() => YoutubeBasicType, { nullable: true })
   async channel(
     @Args('id', { type: () => String }) id: string,
-  ): Promise<YoutubeBasicType | null> {
-    const channel = await this.youtubeService.getChannelById(id);
-    if (!channel) {
-      throw new NotFoundException(id);
-    }
-    return channel;
+    @CurrentUser() user: { userId: string },
+  ): Promise<YoutubeBasicType> {
+    return this.youtubeService.getUnlockedChannelByUser(id, user.userId);
   }
   //get all channels
   @UseGuards(AuthGuard)
