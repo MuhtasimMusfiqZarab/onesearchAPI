@@ -425,16 +425,26 @@ type UserYoutubeType {
 }
 
 type YoutubeBasicType {
+  bio_email: [String!]
   channel_name: String
+  channel_url: String!
   createdAt: DateTime!
   createdBy: String!
+  description: String
+  facebook: String
   id: ID!
+  instagram: String
   isUnlocked: Boolean
   joined: String
   location: String
+  others: String
+  pinterest: String
   socialblade_category: String
   subscribers: Float
-  updatedAt: DateTime
+  tiktok: String
+  timestamp: DateTime
+  twitter: String
+  updatedAt: DateTime!
   updatedBy: String!
   users: [UserType!]
   views: String

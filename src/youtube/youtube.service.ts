@@ -106,7 +106,7 @@ export class YoutubeService {
 
       const [channels, totalCount] = await this.youtubeRepository.findAndCount({
         where: query,
-        order: { ...defaultOrder },
+        order: { timestamp: 'DESC' },
         skip: offset,
         take: limit,
       });
@@ -136,13 +136,13 @@ export class YoutubeService {
       .createQueryBuilder('youtube')
       .innerJoin('youtube.users', 'user', 'user.id = :userId', { userId })
       .where('youtube.id IN (:...channelIds)', {
-        channelIds: channels.map(channel => channel.id),
+        channelIds: channels.map((channel) => channel.id),
       })
       .select('youtube.id', 'id')
       .getRawMany<{ id: string }>();
-    const unlockedIds = new Set(unlockedChannels.map(channel => channel.id));
+    const unlockedIds = new Set(unlockedChannels.map((channel) => channel.id));
 
-    return channels.map(channel =>
+    return channels.map((channel) =>
       Object.assign(channel, { isUnlocked: unlockedIds.has(channel.id) }),
     );
   }
@@ -156,11 +156,11 @@ export class YoutubeService {
       .getRawMany();
 
     const categoryNames = categories.map(
-      category => category.socialblade_category,
+      (category) => category.socialblade_category,
     );
 
     return {
-      categories: categoryNames.filter(x => x !== null),
+      categories: categoryNames.filter((x) => x !== null),
       totalCount: categoryNames.length,
     };
   }
@@ -177,7 +177,7 @@ export class YoutubeService {
 
     // console.log('This is it', locations.length);
 
-    locationNames = locations.map(location => {
+    locationNames = locations.map((location) => {
       if (location.location !== null || location.location !== undefined) {
         return location.location;
       } else {
@@ -186,7 +186,7 @@ export class YoutubeService {
     });
 
     return {
-      locations: locationNames.filter(x => x !== null),
+      locations: locationNames.filter((x) => x !== null),
       totalCount: locationNames.length,
     };
   }

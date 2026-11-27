@@ -1,4 +1,4 @@
-import { ObjectType, Field, Int, ID } from '@nestjs/graphql';
+import { ObjectType, Field, Int } from '@nestjs/graphql';
 import { ExtendedBaseEntity } from '../config/_base.entity';
 
 import { UserType } from 'src/user/user.type';
@@ -55,33 +55,9 @@ export class YoutubeType extends ExtendedBaseEntity {
 }
 
 @ObjectType()
-export class YoutubeBasicType extends ExtendedBaseEntity {
-  @Field(() => ID)
-  id: string;
-
-  @Field({ nullable: true })
-  channel_name: string;
-
-  @Field({ nullable: true })
-  joined: string;
-
-  @Field({ nullable: true })
-  views: string;
-
-  @Field({ nullable: true })
-  subscribers: number;
-
-  @Field({ nullable: true })
-  socialblade_category: string;
-
-  @Field({ nullable: true })
-  location: string;
-
+export class YoutubeBasicType extends YoutubeType {
   @Field(() => Boolean, { nullable: true })
   isUnlocked?: boolean;
-
-  @Field({ nullable: true })
-  updatedAt: Date;
 
   @Field(() => [UserType], { nullable: true })
   users: UserType[];
