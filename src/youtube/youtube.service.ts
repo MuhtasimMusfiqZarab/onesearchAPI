@@ -1,5 +1,9 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import Youtube from './youtube.entity';
 import { ILike, Repository } from 'typeorm';
@@ -14,11 +18,6 @@ import {
 
 import { isValidString } from '../utils/validation';
 import { defaultOrder } from '../utils/query';
-import {
-  YOUTUBE_SEED_CATEGORIES,
-  YOUTUBE_SEED_CHANNEL_NAMES,
-  YOUTUBE_SEED_LOCATIONS,
-} from './seed/youtube.seed';
 
 @Injectable()
 export class YoutubeService {
@@ -54,48 +53,38 @@ export class YoutubeService {
     return found;
   }
 
+  async getUnlockedChannelByUser(
+    id: string,
+    userId: string,
+  ): Promise<YoutubeBasicType> {
+    const channel = await this.youtubeRepository
+      .createQueryBuilder('youtube')
+      .innerJoin('youtube.users', 'user', 'user.id = :userId', { userId })
+      .where('youtube.id = :id', { id })
+      .getOne();
+
+    if (channel) {
+      return Object.assign(channel, { isUnlocked: true });
+    }
+
+    const exists = await this.youtubeRepository.exist({ where: { id } });
+    if (!exists) {
+      throw new NotFoundException(`youtube channel with id ${id} not found!`);
+    }
+
+    throw new ForbiddenException('Unlock this channel to view its data');
+  }
+
   /**
    * @Query getAllChannels
    * @param  data GetChannelsInput
    * @return YoutubeType
    */
 
-  private buildSeedChannels(): any[] {
-    return Array.from({ length: 1000 }, (_, index) => {
-      const category =
-        YOUTUBE_SEED_CATEGORIES[index % YOUTUBE_SEED_CATEGORIES.length];
-      const location =
-        YOUTUBE_SEED_LOCATIONS[index % YOUTUBE_SEED_LOCATIONS.length];
-      const subscribers = (index + 1) * 12000 + (index % 7) * 5000;
-      const baseName =
-        YOUTUBE_SEED_CHANNEL_NAMES[index % YOUTUBE_SEED_CHANNEL_NAMES.length];
-      const displayName = `${baseName} ${Math.floor(
-        index / YOUTUBE_SEED_CHANNEL_NAMES.length,
-      ) + 1}`.trim();
-      const socialHandle = displayName.toLowerCase().replace(/\s+/g, '');
-
-      return {
-        socialblade_category: category,
-        channel_url: `https://www.youtube.com/channel/${index + 1}`,
-        bio_email: [`creator${index + 1}@seed.example`],
-        subscribers,
-        location,
-        channel_name: displayName,
-        timestamp: new Date(Date.now() - index * 86400000),
-        description: `Seeded demo channel for ${displayName} created automatically when the database was empty.`,
-        instagram: `@${socialHandle}`,
-        twitter: `@${socialHandle}`,
-        facebook: socialHandle,
-        tiktok: `@${socialHandle}`,
-        pinterest: socialHandle,
-        others: 'seed-generated',
-        joined: '2021',
-        views: `${(subscribers * 18).toLocaleString()}`,
-      };
-    });
-  }
-
-  async getAllChannels(data: GetChannelsInput): Promise<ChannelsType | null> {
+  async getAllChannels(
+    data: GetChannelsInput,
+    userId: string,
+  ): Promise<ChannelsType | null> {
     const {
       socialblade_category,
       location,
@@ -122,31 +111,40 @@ export class YoutubeService {
         take: limit,
       });
 
-      if (totalCount === 0 && channels.length === 0) {
-        const seedChannels = this.buildSeedChannels();
-        await this.youtubeRepository.save(seedChannels);
-
-        const [
-          seededChannels,
-          seededTotalCount,
-        ] = await this.youtubeRepository.findAndCount({
-          where: query,
-          order: { ...defaultOrder },
-          skip: offset,
-          take: limit,
-        });
-
-        return { channels: seededChannels, totalCount: seededTotalCount };
-      }
-
       if (!channels) {
         throw new NotFoundException(`No Channel found@!`);
       }
 
-      return { channels, totalCount };
+      return {
+        channels: await this.addUnlockStatus(channels, userId),
+        totalCount,
+      };
     } catch (error) {
       throw new Error(error);
     }
+  }
+
+  private async addUnlockStatus(
+    channels: Youtube[],
+    userId: string,
+  ): Promise<Youtube[]> {
+    if (channels.length === 0) {
+      return channels;
+    }
+
+    const unlockedChannels = await this.youtubeRepository
+      .createQueryBuilder('youtube')
+      .innerJoin('youtube.users', 'user', 'user.id = :userId', { userId })
+      .where('youtube.id IN (:...channelIds)', {
+        channelIds: channels.map(channel => channel.id),
+      })
+      .select('youtube.id', 'id')
+      .getRawMany<{ id: string }>();
+    const unlockedIds = new Set(unlockedChannels.map(channel => channel.id));
+
+    return channels.map(channel =>
+      Object.assign(channel, { isUnlocked: unlockedIds.has(channel.id) }),
+    );
   }
 
   //get all categories

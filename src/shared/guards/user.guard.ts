@@ -29,6 +29,10 @@ export class AuthGuard implements CanActivate {
 
     //check the user type instead of email
     if (result?.email) {
+      ctx.getContext().req.user = {
+        userId: result.sub,
+        email: result.email,
+      };
       return true;
     }
 

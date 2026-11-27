@@ -1,6 +1,6 @@
 const graphqlExamples = {
   getAllChannels: `query GetAllChannels($data: GetChannelsInput!) {
-  getAllChannels(data: $data) { channels { id channel_name subscribers location socialblade_category views } totalCount }
+  getAllChannels(data: $data) { channels { id channel_name subscribers location socialblade_category views isUnlocked } totalCount }
 }`,
   channel: `query Channel($id: String!) {
   channel(id: $id) { id channel_name subscribers location socialblade_category views }

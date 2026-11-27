@@ -1,5 +1,4 @@
 import { Args, Query, Resolver, Int, Mutation } from '@nestjs/graphql';
-import { NotFoundException } from '@nestjs/common';
 import { YoutubeService } from './youtube.service';
 import {
   CategoriesType,
@@ -19,6 +18,7 @@ import {
 import { YoutubeType, UserYoutubeType } from './youtube.type';
 
 import { UserService } from 'src/user/user.service';
+import { CurrentUser } from 'src/shared/decorators/current-user.decorator';
 
 @Resolver(() => YoutubeBasicType)
 export class YoutubeResolver {
@@ -42,20 +42,18 @@ export class YoutubeResolver {
   @Query(() => YoutubeBasicType, { nullable: true })
   async channel(
     @Args('id', { type: () => String }) id: string,
-  ): Promise<YoutubeBasicType | null> {
-    const channel = await this.youtubeService.getChannelById(id);
-    if (!channel) {
-      throw new NotFoundException(id);
-    }
-    return channel;
+    @CurrentUser() user: { userId: string },
+  ): Promise<YoutubeBasicType> {
+    return this.youtubeService.getUnlockedChannelByUser(id, user.userId);
   }
   //get all channels
   @UseGuards(AuthGuard)
   @Query(() => ChannelsType, { nullable: true })
   async getAllChannels(
     @Args('data') data: GetChannelsInput,
+    @CurrentUser() user: { userId: string },
   ): Promise<ChannelsType | null> {
-    return await this.youtubeService.getAllChannels(data);
+    return await this.youtubeService.getAllChannels(data, user.userId);
   }
 
   @UseGuards(AuthGuard)
@@ -76,17 +74,12 @@ export class YoutubeResolver {
   async unlockYoutubeLead(
     @Args('input', { type: () => UserYoutubeInput, nullable: false })
     input: UserYoutubeInput,
+    @CurrentUser() user: { userId: string },
   ): Promise<any> {
-    const { userId, youtubeId } = input;
-    const user = await this.userService.findOne(userId);
-    const youtube = await this.youtubeService.findOne(youtubeId);
+    const { youtubeId } = input;
+    await this.youtubeService.findOne(youtubeId);
+    await this.userService.unlockYoutubeLead(user.userId, youtubeId);
 
-    user.youtube = [...user.youtube, youtube];
-    youtube.users = [...youtube.users, user];
-
-    await user.save();
-    await youtube.save();
-
-    return { userId, youtubeId };
+    return { userId: user.userId, youtubeId };
   }
 }

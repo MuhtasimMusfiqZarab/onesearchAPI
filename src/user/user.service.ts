@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import User from './user.entity';
 import {
   RegistrationInput,
@@ -9,7 +13,7 @@ import {
 import { UserAccessRole } from './user.enum';
 import { GetAllUsersType, GetAllUserReviewsType } from './user.type';
 import { isValidString } from '../utils/validation';
-import { ILike, IsNull, Not, Repository } from 'typeorm';
+import { ILike, IsNull, MoreThan, Not, Repository } from 'typeorm';
 import { UserType } from './user.type';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -48,6 +52,43 @@ export class UserService {
     return this.userRepository.findOne({ where: { id } });
   }
 
+  async unlockYoutubeLead(
+    userId: string,
+    youtubeId: string,
+  ): Promise<void> {
+    await this.userRepository.manager.transaction(async manager => {
+      const users = manager.getRepository(User);
+      const user = await users.findOne({
+        where: { id: userId },
+        relations: ['youtube'],
+      });
+
+      if (!user) {
+        throw new NotFoundException(`User with id ${userId} not found!`);
+      }
+
+      if (user.youtube.some(youtube => youtube.id === youtubeId)) {
+        return;
+      }
+
+      const result = await users.decrement(
+        { id: userId, availableCredits: MoreThan(0) },
+        'availableCredits',
+        1,
+      );
+
+      if (!result.affected) {
+        throw new BadRequestException('Insufficient credits to unlock lead');
+      }
+
+      await manager
+        .createQueryBuilder()
+        .relation(User, 'youtube')
+        .of(userId)
+        .add(youtubeId);
+    });
+  }
+
   async createUser(input: RegistrationInput): Promise<UserType> {
     const {
       firstName,
@@ -83,6 +124,7 @@ export class UserService {
           token,
           authProvider,
           accessRole,
+          availableCredits: 5,
           createdBy,
           updatedBy: createdBy,
         });

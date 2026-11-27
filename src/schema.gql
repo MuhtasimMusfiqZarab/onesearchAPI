@@ -416,8 +416,7 @@ type UserType {
 }
 
 input UserYoutubeInput {
-  userId: String!
-  youtubeId: String
+  youtubeId: String!
 }
 
 type UserYoutubeType {
@@ -430,6 +429,7 @@ type YoutubeBasicType {
   createdAt: DateTime!
   createdBy: String!
   id: ID!
+  isUnlocked: Boolean
   joined: String
   location: String
   socialblade_category: String
