@@ -139,6 +139,14 @@ npm run test:e2e
 
 The GraphQL server runs at `http://localhost:5000/graphql` with Apollo's local landing page enabled in development.
 
+### Seed YouTube Channels
+
+With the YouTube table initialized and database settings configured in `.env`, seed 1,000 synthetic records directly into PostgreSQL. The script inserts batches in a transaction and does not require the API to be running or an admin JWT.
+
+```bash
+npm run seed:youtube
+```
+
 ### Swagger API Documentation
 
 Swagger UI is available at `http://localhost:5000/api` after starting the server. It documents the existing REST routes and the complete GraphQL API through the `POST /graphql` transport endpoint.
